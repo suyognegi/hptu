@@ -9,4 +9,9 @@ HOW TO USE
 download all html and js file in your WebStorm/VSCode
 
 download keep your api.py file someone and note its location
-in your 
+in your local of PyCham vnv rum
+
+
+pip install fastapi uvicorn playwright && playwright install chromium
+
+
