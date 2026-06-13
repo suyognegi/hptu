@@ -10,16 +10,21 @@ WHAT DOES IT DO ?
 feel free to extrend it
 
 ############################
+
+
 before running the project, install Node.js from:
 
 https://nodejs.org
 
-download the LTS (Long Term Support) version and complete the installation.
+download the LTS version and complete the installation.
 
-to verify the installation, open a terminal and run:
+to verify the installation open a terminal and run:
 
+
+```bash
 node -v
 npm -v
+```
 ################################
 
 HOW TO RUN
@@ -36,7 +41,9 @@ pip install fastapi uvicorn playwright && playwright install chromium
 
 and then run 
 
+```bash
 uvicorn api:app
+```
 
 
 
