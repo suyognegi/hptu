@@ -29,8 +29,10 @@ download all html and js file in your WebStorm/VSCode
 download keep your api.py file someone and note its location
 in your local of PyCham vnv rum
 
-
+```bash
 pip install fastapi uvicorn playwright && playwright install chromium
+
+```
 
 and then run 
 
@@ -40,20 +42,17 @@ uvicorn api:app
 
 after running the above 
 
-do (in your WebStorm)
+do (in your WebStorm terminal)
 
-
+```bash
 npm install express
 node server.js
+```
+
+
 
 follow the http://localhost:7121
 
 in your WebStorm/VScode
 
 
-
-**Bold Text**
-
-*Italic Text*
-
-~~Strikethrough~~
