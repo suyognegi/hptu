@@ -1,0 +1,2748 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Performance Portal | ResultViewer</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --primary-dark: #0f172a;
+            --primary-blue: #1e293b;
+            --accent-purple: #542cbc;
+            --accent-purple-light: #a78bfa;
+            --text-light: #f8fafc;
+            --text-muted: #94a3b8;
+            --card-bg: rgba(30, 41, 59, 0.7);
+            --border-color: #334155;
+            --success-green: #10b981;
+            --warning-orange: #f59e0b;
+            --danger-red: #ef4444;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--primary-dark), var(--primary-blue));
+            color: var(--text-light);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* SHORTER Navigation Bar */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.8rem 5%;
+            border-bottom: 1px solid var(--border-color);
+            background-color: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(10px);
+            min-height: 60px;
+            height: 60px;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logo {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, var(--accent-purple), #6366f1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.3rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        .brand-name {
+            font-size: 1.3rem;
+            font-weight: 600;
+            background: linear-gradient(to right, var(--accent-purple-light), var(--text-light));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .nav-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+            font-size: 0.95rem;
+        }
+
+        .nav-links a:hover {
+            color: var(--text-light);
+        }
+
+        /* BUTTON ANIMATIONS */
+        .contact-btn {
+            background-color: var(--accent-purple);
+            color: white;
+            border: none;
+            padding: 0.5rem 1.2rem;
+            border-radius: 50px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            font-size: 0.9rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .contact-btn:hover {
+            background-color: var(--accent-purple-light);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(139, 92, 246, 0.4);
+        }
+
+        .contact-btn:active {
+            transform: translateY(0);
+            transition: transform 0.1s;
+        }
+
+        .contact-btn::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 5px;
+            height: 5px;
+            background: rgba(255, 255, 255, 0.5);
+            opacity: 0;
+            border-radius: 100%;
+            transform: scale(1, 1) translate(-50%);
+            transform-origin: 50% 50%;
+        }
+
+        .contact-btn:focus:not(:active)::after {
+            animation: ripple 1s ease-out;
+        }
+
+        @keyframes ripple {
+            0% {
+                transform: scale(0, 0);
+                opacity: 0.5;
+            }
+            100% {
+                transform: scale(40, 40);
+                opacity: 0;
+            }
+        }
+
+        /* WIDER Main Content */
+        .main-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 1.5rem 3%;
+            flex: 1;
+            width: 95%;
+        }
+
+        .page-title {
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .page-title h1 {
+            font-size: 2.8rem;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(to right, var(--accent-purple-light), #c4b5fd);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .page-title p {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            max-width: 700px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        /* WIDER Search Card */
+        .search-card {
+            background-color: var(--card-bg);
+            border-radius: 16px;
+            padding: 2rem;
+            margin: 2rem auto;
+            max-width: 1100px;
+            width: 95%;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+            border: 1px solid var(--border-color);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .search-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background:
+                linear-gradient(45deg, transparent 65%, rgba(139, 92, 246, 0.05) 65%, rgba(139, 92, 246, 0.05) 70%, transparent 70%),
+                linear-gradient(135deg, transparent 65%, rgba(139, 92, 246, 0.05) 65%, rgba(139, 92, 246, 0.05) 70%, transparent 70%);
+            background-size: 30px 30px;
+            pointer-events: none;
+        }
+
+        .search-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 1rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .search-tabs {
+            display: flex;
+            gap: 0;
+            background: var(--primary-blue);
+            border-radius: 10px;
+            padding: 4px;
+            border: 1px solid var(--border-color);
+        }
+
+        .tab-btn {
+            padding: 0.75rem 1.5rem;
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-weight: 500;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            font-size: 0.9rem;
+        }
+
+        .tab-btn.active {
+            background-color: var(--accent-purple);
+            color: white;
+            box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
+        }
+
+        .tab-btn:hover:not(.active) {
+            background-color: rgba(255, 255, 255, 0.05);
+            color: var(--text-light);
+            transform: translateY(-2px);
+        }
+
+        .tab-btn::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 0;
+            height: 3px;
+            background: var(--accent-purple);
+            transition: all 0.3s ease;
+            transform: translateX(-50%);
+        }
+
+        .tab-btn:hover::after {
+            width: 70%;
+        }
+
+        .semester-selector {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .semester-selector label {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .semester-selector select {
+            background-color: var(--primary-blue);
+            color: var(--text-light);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .semester-selector select:hover {
+            border-color: var(--accent-purple);
+            box-shadow: 0 0 0 1px rgba(139, 92, 246, 0.2);
+        }
+
+        .semester-selector select:focus {
+            outline: none;
+            border-color: var(--accent-purple);
+            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2);
+        }
+
+        .helper-text {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 1.5rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .helper-text i {
+            color: var(--accent-purple);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* SIMPLE DIVS FOR INPUT AREAS (NO FORMS) */
+        .search-area {
+            display: none;
+            flex-direction: column;
+            gap: 1.5rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .input-row {
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        .input-group {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .input-group.full-width {
+            width: 100%;
+        }
+
+        .input-group label {
+            color: var(--text-light);
+            font-weight: 500;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .input-group label::before {
+            content: '→';
+            color: var(--accent-purple);
+            font-weight: bold;
+        }
+
+        .text-input {
+            background-color: var(--primary-blue);
+            color: var(--text-light);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 1rem 1.2rem;
+            font-size: 1rem;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            width: 100%;
+        }
+
+        .text-input:hover {
+            border-color: var(--accent-purple-light);
+            box-shadow: 0 0 0 1px rgba(139, 92, 246, 0.2);
+        }
+
+        .text-input:focus {
+            outline: none;
+            border-color: var(--accent-purple);
+            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .textarea-input {
+            background-color: var(--primary-blue);
+            color: var(--text-light);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 1rem 1.2rem;
+            font-size: 1rem;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            width: 100%;
+            min-height: 120px;
+            resize: vertical;
+            font-family: 'Segoe UI', monospace;
+        }
+
+        .textarea-input:hover {
+            border-color: var(--accent-purple-light);
+            box-shadow: 0 0 0 1px rgba(139, 92, 246, 0.2);
+        }
+
+        .textarea-input:focus {
+            outline: none;
+            border-color: var(--accent-purple);
+            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2);
+            transform: translateY(-2px);
+        }
+
+        /* Example text */
+        .example-text {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            margin-top: 0.25rem;
+            font-style: italic;
+        }
+
+        /* MODIFIED: Search buttons with wave flow and bubble animation */
+        .button-row {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .action-btn {
+            font-family: "Helvetica", "Arial", sans-serif;
+            background-color: var(--accent-purple);
+            color: white;
+            border: none;
+            padding: 1rem 2.5rem;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            flex: 1;
+            position: relative;
+            transition: transform ease-in 0.1s, box-shadow ease-in 0.25s;
+            /*box-shadow: 0 2px 25px rgba(139, 92, 246, 0.5);*/
+            overflow: visible;
+        }
+
+        .action-btn:focus {
+            outline: 0;
+        }
+
+        /* Wave flow effect on hover */
+        .action-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.7s;
+            z-index: 1;
+        }
+
+        .action-btn:hover::before {
+            left: 100%;
+        }
+
+        /* Bubble animation elements */
+        .action-btn:after, .action-btn:before {
+            position: absolute;
+            content: "";
+            display: block;
+            width: 140%;
+            height: 100%;
+            left: -20%;
+            z-index: -1000;
+            transition: all ease-in-out 0.5s;
+            background-repeat: no-repeat;
+            pointer-events: none;
+        }
+
+        .action-btn:before {
+            display: none;
+            top: -75%;
+            background-image:
+                radial-gradient(circle, var(--accent-purple) 20%, transparent 20%),
+                radial-gradient(circle, transparent 20%, var(--accent-purple) 20%, transparent 30%),
+                radial-gradient(circle, var(--accent-purple) 20%, transparent 20%),
+                radial-gradient(circle, var(--accent-purple) 20%, transparent 20%),
+                radial-gradient(circle, transparent 10%, var(--accent-purple) 15%, transparent 20%),
+                radial-gradient(circle, var(--accent-purple) 20%, transparent 20%),
+                radial-gradient(circle, var(--accent-purple) 20%, transparent 20%),
+                radial-gradient(circle, var(--accent-purple) 20%, transparent 20%),
+                radial-gradient(circle, var(--accent-purple) 20%, transparent 20%);
+            background-size: 10% 10%, 20% 20%, 15% 15%, 20% 20%, 18% 18%, 10% 10%, 15% 15%, 10% 10%, 18% 18%;
+        }
+
+        .action-btn:after {
+            display: none;
+            bottom: -75%;
+            background-image:
+                radial-gradient(circle, var(--accent-purple) 20%, transparent 20%),
+                radial-gradient(circle, var(--accent-purple) 20%, transparent 20%),
+                radial-gradient(circle, transparent 10%, var(--accent-purple) 15%, transparent 20%),
+                radial-gradient(circle, var(--accent-purple) 20%, transparent 20%),
+                radial-gradient(circle, var(--accent-purple) 20%, transparent 20%),
+                radial-gradient(circle, var(--accent-purple) 20%, transparent 20%),
+                radial-gradient(circle, var(--accent-purple) 20%, transparent 20%);
+            background-size: 15% 15%, 20% 20%, 18% 18%, 20% 20%, 15% 15%, 10% 10%, 20% 20%;
+        }
+
+        .action-btn.animate:before {
+            display: block;
+            animation: topBubbles ease-in-out 8s forwards;
+        }
+
+        .action-btn.animate:after {
+            display: block;
+            animation: bottomBubbles ease-in-out 8s forwards;
+        }
+
+        .action-btn:active {
+            transform: scale(0.9);
+            background-color: #7c3aed; /* Darker shade of accent-purple */
+            /*box-shadow: 0 2px 25px rgba(139, 92, 246, 0.2);*/
+        }
+
+        .action-btn i {
+            font-size: 1.1rem;
+            transition: transform 0.3s;
+            position: relative;
+            z-index: 2;
+        }
+
+        .action-btn:hover i {
+            transform: scale(1.2);
+        }
+
+        /* Bubble animations */
+        @keyframes topBubbles {
+            0% {
+                background-position: 5% 90%, 10% 90%, 10% 90%, 15% 90%, 25% 90%, 25% 90%, 40% 90%, 55% 90%, 70% 90%;
+            }
+            50% {
+                background-position: 0% 80%, 0% 20%, 10% 40%, 20% 0%, 30% 30%, 22% 50%, 50% 50%, 65% 20%, 90% 30%;
+            }
+            100% {
+                background-position: 0% 70%, 0% 10%, 10% 30%, 20% -10%, 30% 20%, 22% 40%, 50% 40%, 65% 10%, 90% 20%;
+                background-size: 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%;
+            }
+        }
+
+        @keyframes bottomBubbles {
+            0% {
+                background-position: 10% -10%, 30% 10%, 55% -10%, 70% -10%, 85% -10%, 70% -10%, 70% 0%;
+            }
+            50% {
+                background-position: 0% 80%, 20% 80%, 45% 60%, 60% 100%, 75% 70%, 95% 60%, 105% 0%;
+            }
+            100% {
+                background-position: 0% 90%, 20% 90%, 45% 70%, 60% 110%, 75% 80%, 95% 70%, 110% 10%;
+                background-size: 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%;
+            }
+        }
+
+        .cancel-btn {
+            background-color: var(--primary-blue);
+            color: var(--text-light);
+            border: 1px solid var(--border-color);
+            padding: 1rem 2.5rem;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cancel-btn:hover {
+            background-color: rgba(239, 68, 68, 0.1);
+            border-color: var(--danger-red);
+            color: var(--danger-red);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(239, 68, 68, 0.2);
+        }
+
+        .cancel-btn:active {
+            transform: translateY(-1px);
+            transition: transform 0.1s;
+        }
+
+        .cancel-btn:hover i {
+            animation: shake 0.5s ease-in-out;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(-10deg); }
+            75% { transform: rotate(10deg); }
+        }
+
+        /* Results Section */
+        .results-section {
+            margin-top: 3rem;
+            max-width: 1100px;
+            width: 95%;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .results-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .results-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .view-toggle {
+            display: flex;
+            background-color: var(--primary-blue);
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+        }
+
+        .view-btn {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            padding: 0.8rem 2rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+        }
+
+        .view-btn.active {
+            background-color: var(--accent-purple);
+            color: white;
+            box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
+        }
+
+        .view-btn:hover:not(.active) {
+            background-color: rgba(255, 255, 255, 0.05);
+            color: var(--text-light);
+            transform: translateY(-2px);
+        }
+
+        .results-count {
+            background-color: var(--primary-blue);
+            color: var(--accent-purple);
+            padding: 0.5rem 1.5rem;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            border: 1px solid var(--border-color);
+            transition: all 0.3s;
+        }
+
+        .results-count:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 15px rgba(139, 92, 246, 0.2);
+        }
+
+        /* Tab Content Areas */
+        .results-content {
+            display: none;
+        }
+
+        .results-content.active {
+            display: block;
+        }
+
+        /* Empty State */
+        .empty-state {
+            background-color: var(--card-bg);
+            border-radius: 16px;
+            padding: 4rem 2rem;
+            text-align: center;
+            border: 2px dashed var(--border-color);
+            display: block;
+            transition: all 0.3s;
+        }
+
+        .empty-state:hover {
+            border-color: var(--accent-purple);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .empty-state i {
+            font-size: 4rem;
+            color: var(--text-muted);
+            margin-bottom: 1.5rem;
+            transition: all 0.3s;
+        }
+
+        .empty-state:hover i {
+            color: var(--accent-purple);
+            transform: scale(1.1);
+        }
+
+        .empty-state h4 {
+            color: var(--text-light);
+            margin-bottom: 0.5rem;
+            font-size: 1.3rem;
+        }
+
+        .empty-state p {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .empty-state small {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            display: block;
+            margin-top: 0.5rem;
+        }
+
+        /* JSON Display Container */
+        .json-container {
+            background-color: var(--primary-blue);
+            border-radius: 16px;
+            padding: 0;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+            display: none;
+        }
+
+        .json-container.active {
+            display: block;
+        }
+
+        .json-header {
+            background-color: var(--primary-dark);
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .json-title {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text-light);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .copy-btn {
+            background-color: var(--accent-purple);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.375rem;
+            transition: all 0.3s;
+            font-size: 0.85rem;
+        }
+
+        .copy-btn:hover {
+            background-color: var(--accent-purple-light);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
+        }
+
+        .json-display {
+            padding: 1.5rem;
+            overflow-x: auto;
+            font-family: 'Monaco', 'Menlo', 'Consolas', monospace;
+            font-size: 0.85rem;
+            line-height: 1.6;
+            min-height: 300px;
+            max-height: 500px;
+            overflow-y: auto;
+            background-color: rgba(15, 23, 42, 0.5);
+        }
+
+        .json-display pre {
+            margin: 0;
+            color: #e0e0e0;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .json-display code {
+            color: #e0e0e0;
+        }
+
+
+        #jsonOutput {
+    white-space: pre;
+    overflow-y: auto;
+}
+
+        /* CSV Display Container */
+        .csv-container {
+            background-color: var(--primary-blue);
+            border-radius: 16px;
+            padding: 0;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+            display: none;
+        }
+
+        .csv-container.active {
+            display: block;
+        }
+
+        .csv-header {
+            background-color: var(--primary-dark);
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .csv-title {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text-light);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .csv-copy-btn {
+            background-color: var(--accent-purple);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.375rem;
+            transition: all 0.3s;
+            font-size: 0.85rem;
+        }
+
+        .csv-copy-btn:hover {
+            background-color: var(--accent-purple-light);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
+        }
+
+        .csv-display {
+            padding: 1.5rem;
+            overflow-x: auto;
+            font-family: 'Monaco', 'Menlo', 'Consolas', monospace;
+            font-size: 0.85rem;
+            line-height: 1.6;
+            min-height: 300px;
+            max-height: 500px;
+            overflow-y: auto;
+            background-color: rgba(15, 23, 42, 0.5);
+            white-space: pre;
+            color: #e0e0e0;
+        }
+
+        .retry-btn {
+            background-color: var(--accent-purple);
+            color: white;
+            border: none;
+            padding: 0.75rem 2rem;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 1rem;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .retry-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(139, 92, 246, 0.3);
+        }
+
+        /* Show active search area */
+        #single-search-area {
+            display: flex;
+        }
+
+        /* ============================== */
+        /* TABLE STYLING FROM ORIGINAL THEME */
+        /* ============================== */
+        .student-card {
+            background-color: var(--card-bg);
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .student-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .student-info h3 {
+            font-size: 1.3rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .student-info p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .student-results {
+            display: flex;
+            gap: 2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .result-item {
+            text-align: center;
+        }
+
+        .result-label {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .result-value {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .sgpa {
+            color: var(--success-green);
+        }
+
+        .cgpa {
+            color: var(--accent-purple);
+        }
+
+        .result-status {
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .pass {
+            background-color: rgba(16, 185, 129, 0.2);
+            color: var(--success-green);
+        }
+
+        .fail {
+            background-color: rgba(239, 68, 68, 0.2);
+            color: var(--danger-red);
+        }
+
+        /* TABLE STYLES FROM ORIGINAL */
+        .marks-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+        }
+
+.marks-table th {
+    background-color: rgba(30, 41, 59, 0.8);
+    color: var(--text-muted);
+    text-align: left;
+    padding: 1rem;
+    font-weight: 500;
+}
+
+.marks-table td {
+    padding: 1rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+
+/* ======== COMPLETE GRADE STYLES ======== */
+
+.grade {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.25rem 0;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    min-width: 2.5rem;  /* Fixed width for all grades */
+    min-height: 1.75rem; /* Fixed height for all grades */
+    width: 2.5rem;      /* Ensures consistent width */
+    height: 1.75rem;    /* Ensures consistent height */
+    box-sizing: border-box;
+    text-align: center;
+    line-height: 1;
+}
+
+/* O – Outstanding (10) - Best grade */
+.grade-O {
+    background-color: rgba(16, 185, 129, 0.2); /* var(--success-green) with 20% opacity */
+    color: var(--success-green); /* #10b981 */
+    border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+/* A+ – Excellent (9) */
+.grade-A-plus {
+    background-color: rgba(16, 185, 129, 0.15);
+    color: var(--success-green);
+    border: 1px solid rgba(16, 185, 129, 0.25);
+}
+
+/* A – Very Good (8) */
+.grade-A {
+    background-color: rgba(34, 197, 94, 0.15); /* #22c55e with 15% opacity */
+    color: #22c55e;
+    border: 1px solid rgba(34, 197, 94, 0.25);
+}
+
+/* B+ – Good (7) */
+.grade-B-plus {
+    background-color: rgba(101, 163, 13, 0.15); /* #65a30d with 15% opacity */
+    color: #65a30d;
+    border: 1px solid rgba(101, 163, 13, 0.25);
+}
+
+/* B – Average (6) */
+.grade-B {
+    background-color: rgba(245, 158, 11, 0.15); /* var(--warning-orange) with 15% opacity */
+    color: var(--warning-orange); /* #f59e0b */
+    border: 1px solid rgba(245, 158, 11, 0.25);
+}
+
+/* C – Pass (5) */
+.grade-C {
+    background-color: rgba(251, 191, 36, 0.15); /* #fbbf24 with 15% opacity */
+    color: #fbbf24;
+    border: 1px solid rgba(251, 191, 36, 0.25);
+}
+
+/* P – Pass (sometimes used instead of C) */
+.grade-P {
+    background-color: rgba(139, 92, 246, 0.15); /* var(--accent-purple) with 15% opacity */
+    color: var(--accent-purple); /* #8b5cf6 */
+    border: 1px solid rgba(139, 92, 246, 0.25);
+}
+
+/* F – Fail (0) */
+.grade-F {
+    background-color: rgba(239, 68, 68, 0.15); /* var(--danger-red) with 15% opacity */
+    color: var(--danger-red); /* #ef4444 */
+    border: 1px solid rgba(239, 68, 68, 0.25);
+}
+
+.grade-R {
+    background-color: rgba(239, 68, 68, 0.15); /* var(--danger-red) with 15% opacity */
+    color: var(--danger-red); /* #ef4444 */
+    border: 1px solid rgba(239, 68, 68, 0.25);
+}
+
+/* AB – Absent */
+.grade-AB {
+    background-color: rgba(107, 114, 128, 0.15); /* #6b7280 with 15% opacity */
+    color: #6b7280;
+    border: 1px solid rgba(107, 114, 128, 0.25);
+}
+
+/* I – Incomplete (rare) */
+.grade-I {
+    background-color: rgba(75, 85, 99, 0.15); /* #4b5563 with 15% opacity */
+    color: #4b5563;
+    border: 1px solid rgba(75, 85, 99, 0.25);
+}
+
+        /* Footer Styles */
+        .footer {
+            background-color: var(--primary-dark);
+            border-top: 1px solid var(--border-color);
+            padding: 2rem 3%;
+            margin-top: 3rem;
+        }
+
+        .footer-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .footer-logo {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .footer-about p {
+            color: var(--text-muted);
+            line-height: 1.6;
+            max-width: 800px;
+        }
+
+        .footer-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            margin-top: 1rem;
+        }
+
+        .footer-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .footer-links a:hover {
+            color: var(--accent-purple);
+        }
+
+        .copyright p {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 0.6rem 4%;
+                min-height: 50px;
+                height: 50px;
+            }
+
+            .logo {
+                width: 30px;
+                height: 30px;
+                font-size: 1.1rem;
+            }
+
+            .brand-name {
+                font-size: 1.1rem;
+            }
+
+            .main-content {
+                padding: 1rem 4%;
+                width: 98%;
+            }
+
+            .search-card {
+                padding: 1.5rem;
+                margin: 1.5rem auto;
+                width: 98%;
+            }
+
+            .page-title h1 {
+                font-size: 2rem;
+            }
+
+            .page-title p {
+                font-size: 1rem;
+                max-width: 95%;
+            }
+
+            .search-tabs {
+                flex-wrap: wrap;
+            }
+
+            .tab-btn {
+                flex: 1;
+                min-width: 110px;
+                padding: 0.6rem 0.8rem;
+                font-size: 0.85rem;
+            }
+
+            .input-row {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .button-row {
+                flex-direction: column;
+            }
+
+            .action-btn, .cancel-btn {
+                width: 100%;
+                padding: 1rem;
+            }
+
+            .results-header {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: flex-start;
+            }
+
+            .view-toggle {
+                align-self: stretch;
+            }
+
+            .view-btn {
+                flex: 1;
+                text-align: center;
+            }
+
+            .json-display, .csv-display {
+                padding: 1rem;
+                font-size: 0.8rem;
+                min-height: 250px;
+            }
+
+            .student-results {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .marks-table th,
+            .marks-table td {
+                padding: 0.75rem 0.5rem;
+                font-size: 0.85rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .navbar {
+                flex-direction: column;
+                height: auto;
+                min-height: auto;
+                padding: 0.8rem 3%;
+                gap: 0.8rem;
+            }
+
+            .nav-links {
+                width: 100%;
+                justify-content: center;
+                flex-wrap: wrap;
+                gap: 1rem;
+            }
+
+            .contact-btn {
+                padding: 0.4rem 1rem;
+                font-size: 0.85rem;
+            }
+
+            .page-title h1 {
+                font-size: 1.6rem;
+            }
+
+            .search-header {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: flex-start;
+            }
+
+            .search-tabs {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .tab-btn {
+                flex: 1;
+                text-align: center;
+                padding: 0.6rem 0.5rem;
+                font-size: 0.8rem;
+            }
+
+            .json-header, .csv-header {
+                padding: 0.8rem 1rem;
+                flex-direction: column;
+                gap: 0.8rem;
+                align-items: flex-start;
+            }
+
+            .copy-btn, .csv-copy-btn {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .student-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+
+            .student-card {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="logo-container">
+            <div class="logo">R</div>
+            <div class="brand-name">ResultViewer</div>
+        </div>
+        <div class="nav-links">
+            <a href="/about-us">About</a>
+            <a href="/terms">Terms</a>
+            <button class="contact-btn">Contact 5/10 CGPA wala</button>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Page Title -->
+        <div class="page-title">
+            <h1>HPTU Student Result Portal</h1>
+            <p>Search student academic records by roll number or generate reports for a range. View detailed marks, grades, and performance metrics.</p>
+        </div>
+
+        <!-- Search Card -->
+        <div class="search-card">
+            <div class="search-header">
+                <div class="search-tabs">
+                    <button class="tab-btn active" id="single-tab">Single Search</button>
+                    <button class="tab-btn" id="range-tab">Range Search</button>
+                    <button class="tab-btn" id="multiple-tab">Multiple Search</button>
+                </div>
+                <div class="semester-selector">
+                    <label for="semester">Semester:</label>
+                    <select id="semester">
+<!--                        <option value="bt_1_reg_25">1st sem (reg) 25</option>-->
+                        <option value="bt_2_reg_25" selected>2nd sem (reg) 25</option>
+<!--                        <option value="bt_3_reg_25">3rd sem (reg) 25</option>-->
+<!--                        <option value="bt_4_reg_25">4th sem (reg) 25</option>-->
+                    </select>
+                </div>
+            </div>
+
+            <div class="helper-text">
+                <i class="fas fa-filter"></i>
+                <span>Configure your search parameters below</span>
+            </div>
+
+            <!-- Single Search Area -->
+            <div class="search-area" id="single-search-area">
+                <div class="input-group">
+                    <label for="roll-number">ROLL NUMBER</label>
+                    <input type="text" class="text-input" id="roll-number" placeholder="Enter roll number (e.g., 244903010200)" autocomplete="off">
+                </div>
+                <div class="button-row">
+                    <button class="action-btn" id="single-search-btn">
+                        <i class="fas fa-search"></i> Search Results
+                    </button>
+                    <button class="cancel-btn" id="cancel-single">
+                        <i class="fas fa-times"></i> Cancel
+                    </button>
+                </div>
+            </div>
+
+            <!-- Range Search Area -->
+            <div class="search-area" id="range-search-area">
+                <div class="input-row">
+                    <div class="input-group">
+                        <label for="start-roll">Starting Roll Number</label>
+                        <input type="text" class="text-input" id="start-roll" placeholder="e.g., 244903010200">
+                    </div>
+                    <div class="input-group">
+                        <label for="end-roll">Ending Roll Number</label>
+                        <input type="text" class="text-input" id="end-roll" placeholder="e.g., 244903010800">
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label for="exceptions">Exceptions (Optional)</label>
+                    <input type="text" class="text-input" id="exceptions" placeholder="e.g., 244903010200, 244903010300">
+                    <small style="color: var(--text-muted);">Enter roll numbers separated by commas to exclude from search</small>
+                </div>
+                <div class="button-row">
+                    <button class="action-btn" id="range-search-btn">
+                        <i class="fas fa-file-export"></i> Generate Range Report
+                    </button>
+                    <button class="cancel-btn" id="cancel-range">
+                        <i class="fas fa-times"></i> Cancel
+                    </button>
+                </div>
+            </div>
+
+            <!-- Multiple Search Area -->
+            <div class="search-area" id="multiple-search-area">
+                <div class="input-group full-width">
+                    <label for="multiple-rolls">ROLL NUMBERS</label>
+                    <textarea class="textarea-input" id="multiple-rolls" placeholder="Enter multiple roll numbers separated by commas or spaces &#10;100, 105, 205, 300&#10;2406031 2406032 2406033"></textarea>
+                    <div class="example-text">
+                        <i class="fas fa-info-circle"></i> You can enter roll numbers separated by commas, spaces, or put each on a new line.
+                    </div>
+                </div>
+                <div class="button-row">
+                    <button class="action-btn" id="multiple-search-btn">
+                        <i class="fas fa-users"></i> Search Multiple
+                    </button>
+                    <button class="cancel-btn" id="cancel-multiple">
+                        <i class="fas fa-times"></i> Cancel
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results Section -->
+        <div class="results-section">
+            <div class="results-header">
+                <div class="results-title">Results</div>
+                <div class="view-toggle">
+                    <button class="view-btn active" id="result-view-btn">
+                        <i class="fas fa-table"></i> Result
+                    </button>
+                    <button class="view-btn" id="json-view-btn">
+                        <i class="fas fa-code"></i> JSON
+                    </button>
+                    <button class="view-btn" id="csv-view-btn">
+                        <i class="fas fa-file-csv"></i> CSV
+                    </button>
+                </div>
+                <div class="results-count" id="results-count">0 found</div>
+            </div>
+
+            <!-- Result View (Visual Display) -->
+            <div class="results-content active" id="result-view">
+                <!-- Empty State -->
+                <div class="empty-state" id="empty-state">
+                    <i class="fas fa-user-graduate"></i>
+                    <h4>Welcome to HPTU Student Result Portal</h4>
+                    <p>Enter search parameters above to view student records</p>
+                    <small>Search by single roll number, multiple roll numbers, or a range of roll numbers</small>
+                </div>
+
+                <!-- Result content will be populated here by your script -->
+                <div id="result-content" style="display: none;">
+                    <!-- Your result tables/cards will go here -->
+                </div>
+            </div>
+
+            <!-- JSON View (Hidden initially) -->
+            <div class="json-container" id="json-view">
+                <div class="json-header">
+                    <div class="json-title">
+                        <i class="fas fa-database"></i> JSON Data Output
+                    </div>
+                    <button class="copy-btn" id="copy-json-btn">
+                        <i class="far fa-copy"></i> Copy JSON
+                    </button>
+                </div>
+                <div class="json-display">
+                    <pre id="json-output"><code>// No data available. Perform a search first.</code></pre>
+                </div>
+            </div>
+
+            <!-- CSV View (New - Hidden initially) -->
+            <div class="csv-container" id="csv-view">
+                <div class="csv-header">
+                    <div class="csv-title">
+                        <i class="fas fa-file-csv"></i> CSV Data Output
+                    </div>
+                    <button class="csv-copy-btn" id="copy-csv-btn">
+                        <i class="far fa-copy"></i> Copy CSV
+                    </button>
+                </div>
+                <div class="csv-display">
+                    <pre id="csv-output">// No CSV data available. Perform a search first.</pre>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-logo">
+                <div class="logo">R</div>
+                <div class="brand-name">ResultViewer</div>
+            </div>
+
+            <div class="footer-about">
+                <p>ResultViewer is a comprehensive HPTU Student Result Portal designed for academic institutions to efficiently manage and analyze student academic records. Our platform provides detailed insights into student performance, grade distribution, and academic trends.</p>
+            </div>
+
+            <div class="footer-links">
+                <a href="/about-us" >About Us</a>
+                <a href="/privacy">Privacy Policy</a>
+                <a href="/terms">Terms of Service</a>
+                <a href="/contact">Contact</a>
+                <a href="/api">API Documentation</a>
+            </div>
+
+            <div class="copyright">
+                <p>&copy; 2023 ResultViewer. All rights reserved. This system is for authorized use only. Unauthorized access or distribution of student records is strictly prohibited.</p>
+            </div>
+        </div>
+    </footer>
+</body>
+        <script>
+
+
+
+
+                const result_view_btn = document.getElementById('result-view-btn');
+        const json_view_btn = document.getElementById('json-view-btn');
+        const csv_view_btn = document.getElementById('csv-view-btn');
+        const result_view = document.getElementById('result-view');
+        const json_view = document.getElementById('json-view');
+        const csv_view = document.getElementById('csv-view');
+        const copyJsonBtn = document.getElementById('copy-json-btn');
+        const copyCsvBtn = document.getElementById('copy-csv-btn');
+        const json_output = document.getElementById('json-output');
+        const csv_output = document.getElementById('csv-output');
+
+
+        result_view_btn.addEventListener('click', () => {
+            result_view_btn.classList.add('active');
+            json_view_btn.classList.remove('active');
+            csv_view_btn.classList.remove('active');
+
+            result_view.classList.add('active');
+            json_view.classList.remove('active');
+            csv_view.classList.remove('active');
+        });
+
+        json_view_btn.addEventListener('click', () => {
+            json_view_btn.classList.add('active');
+            result_view_btn.classList.remove('active');
+            csv_view_btn.classList.remove('active');
+
+            json_view.classList.add('active');
+            result_view.classList.remove('active');
+            csv_view.classList.remove('active');
+        });
+
+        csv_view_btn.addEventListener('click', () => {
+            csv_view_btn.classList.add('active');
+            result_view_btn.classList.remove('active');
+            json_view_btn.classList.remove('active');
+
+            csv_view.classList.add('active');
+            result_view.classList.remove('active');
+            json_view.classList.remove('active');
+        });
+
+
+
+
+        function animateButton(button) {
+            button.classList.add('animate');
+            setTimeout(() => {
+                button.classList.remove('animate');
+            }, 3000);
+        }
+
+
+        const searchButtons = document.querySelectorAll('.action-btn');
+        searchButtons.forEach(button => {
+            button.addEventListener('click', function(e) {
+                animateButton(this);
+            });
+        });
+
+
+
+
+        const multiple_rolls_input = document.getElementById('multiple-rolls');
+        const cancel_multiple_btn = document.getElementById('cancel-multiple');
+        const multiple_search_area = document.getElementById('multiple-search-area');
+        const multiple_search_button = document.getElementById('multiple-search-btn');
+        const multiple_tab_button = document.getElementById('multiple-tab');
+
+        const single_tab_button = document.getElementById('single-tab');
+        const range_tab_button = document.getElementById('range-tab');
+        const single_search_area = document.getElementById('single-search-area');
+        const range_search_area = document.getElementById('range-search-area');
+        const empty_state = document.getElementById('empty-state');
+        const results_count = document.getElementById('results-count');
+        const roll_number_input = document.getElementById('roll-number');
+        const start_roll_input = document.getElementById('start-roll');
+        const end_roll_input = document.getElementById('end-roll');
+        const exceptions_input = document.getElementById('exceptions');
+        const semester_select = document.getElementById('semester');
+        const single_search_btn = document.getElementById('single-search-btn');
+        const range_search_btn = document.getElementById('range-search-btn');
+        const cancel_single_btn = document.getElementById('cancel-single');
+        const cancel_range_btn = document.getElementById('cancel-range');
+
+        let result_parent_container = document.getElementById('result-content');
+let found_count=0;
+let total_json_txt='';
+let total_csv_txt='';
+let csv_headers_generated = false;
+let all_subject_names = new Set(); // Track all unique subject names across all students
+let searched_rolls = []; // Track all rolls that were searched
+let csv_data_map = new Map(); // Map to store CSV data for each roll number
+let all_csv_data = []; // Array to store all CSV rows in list format
+
+
+function clean_result_content(){
+    result_parent_container.innerHTML = '';
+}
+let old_empty_state_content = empty_state.innerHTML;
+
+
+function add_empty_state(){
+    empty_state.style='flex';
+    result_parent_container.style.display='none';
+    found_count=0;
+    total_json_txt='';
+    total_csv_txt='';
+    csv_headers_generated = false;
+    all_subject_names.clear();
+    searched_rolls = [];
+    csv_data_map.clear();
+    all_csv_data = [];
+    empty_state.innerHTML = old_empty_state_content;
+}
+
+function add_temp_empty_state(){
+    empty_state.style.display=`flex`;
+    empty_state.innerHTML = `
+        <i class="fas fa-user-graduate"></i>
+        <h4>Welcome to HPTU Student Result Portal</h4>
+        <p>
+            <i class="fas fa-circle-notch fa-spin fa-sm" style="color: var(--accent-purple); margin-right: 6px;"></i>Wait while we are fetching your precious data...
+        </p>
+        <small>Good things take time</small>
+    `;
+}
+
+function remove_empty_state(){
+    empty_state.style.display = 'none';
+    result_parent_container.style.display = 'flex';
+}
+
+
+function startSearchUI() {
+    found_count = 0
+    total_json_txt = ''
+    total_csv_txt = ''
+    csv_headers_generated = false
+    all_subject_names.clear()
+    searched_rolls = []
+    csv_data_map.clear()
+    all_csv_data = []
+
+    json_output.innerText = '// fetching code...'
+    csv_output.innerText = '// No CSV data available. Perform a search first.'
+    results_count.innerText = '0 found'
+
+    result_parent_container.innerHTML = ''
+    result_parent_container.style.display = 'none'
+
+    empty_state.style.display = 'flex'
+    empty_state.innerHTML = `
+        <i class="fas fa-circle-notch fa-spin"></i>
+        <h4>Fetching results…</h4>
+        <small>Please wait</small>
+    `
+
+    single_search_btn.disabled = true
+    range_search_btn.disabled = true
+    multiple_search_button.disabled = true
+}
+
+
+
+function showResultsUI() {
+    empty_state.style.display = 'none'
+    result_parent_container.style.display = 'flex'
+}
+
+
+function endSearchUI() {
+    single_search_btn.disabled = false
+    range_search_btn.disabled = false
+    multiple_search_button.disabled = false
+
+    if (found_count === 0) {
+        empty_state.style.display = 'flex'
+        empty_state.innerHTML = `
+            <i class="fas fa-user-graduate"></i>
+            <h4>No results found</h4>
+            <small>Try a different roll number</small>
+        `
+    }
+}
+
+        // ------------------toggle inputs---------------------
+        single_tab_button.addEventListener("click", ()=>{
+
+            single_tab_button.classList.add('active');
+            range_tab_button.classList.remove('active');
+            multiple_tab_button.classList.remove('active');
+
+            single_search_area.style.display='flex';
+            range_search_area.style.display = 'none';
+            multiple_search_area.style.display = 'none';
+        });
+
+        range_tab_button.addEventListener("click", ()=>{
+            range_tab_button.classList.add('active');
+            single_tab_button.classList.remove('active');
+            multiple_tab_button.classList.remove('active');
+
+            single_search_area.style.display='none';
+            range_search_area.style.display = 'flex';
+            multiple_search_area.style.display = 'none';
+        });
+
+        multiple_tab_button.addEventListener("click", ()=>{
+            multiple_tab_button.classList.add('active');
+            single_tab_button.classList.remove('active');
+            range_tab_button.classList.remove('active');
+
+            single_search_area.style.display='none';
+            multiple_search_area.style.display = 'flex';
+            range_search_area.style.display = 'none';
+
+
+
+        });
+
+
+
+        // Add spinner and text changing logic
+        let searchStatusInterval;
+        const searchStatusTexts = [
+            "heating the cold start",
+            "waking playwright",
+            "selenium doing its job",
+            "wait about there..."
+        ];
+        let searchActive = false;
+        let activeButton = null;
+        let dataReceived = false;
+        let currentReader = null;
+        let currentAbortController = null;
+
+        function startSearchAnimation(button) {
+            searchActive = true;
+            dataReceived = false;
+            activeButton = button;
+
+            // Create new AbortController for this search
+            currentAbortController = new AbortController();
+
+            // Store original button text
+            button.setAttribute('data-original-text', button.innerHTML);
+
+            // Add spinner icon
+            const icon = button.querySelector('i') || button.querySelector('.fa');
+            if (icon) {
+                icon.className = 'fas fa-circle-notch fa-spin';
+            } else {
+                button.innerHTML = `<i class="fas fa-circle-notch fa-spin"></i> ${button.textContent}`;
+            }
+
+            // Start text cycling
+            let textIndex = 0;
+            searchStatusInterval = setInterval(() => {
+                if (searchActive) {
+                    button.innerHTML = `<i class="fas fa-circle-notch fa-spin"></i> ${searchStatusTexts[textIndex]}`;
+                    textIndex = (textIndex + 1) % searchStatusTexts.length;
+                }
+            }, 5000);
+        }
+
+        function updateToExtractingData() {
+            if (activeButton && !dataReceived) {
+                dataReceived = true;
+                clearInterval(searchStatusInterval);
+                activeButton.innerHTML = `<i class="fas fa-circle-notch fa-spin"></i> extracting data...`;
+            }
+        }
+
+        function restoreButton() {
+            if (activeButton) {
+                searchActive = false;
+                dataReceived = false;
+                clearInterval(searchStatusInterval);
+
+                const originalText = activeButton.getAttribute('data-original-text');
+                if (originalText) {
+                    activeButton.innerHTML = originalText;
+                }
+
+                // Re-enable buttons
+                single_search_btn.disabled = false;
+                range_search_btn.disabled = false;
+                multiple_search_button.disabled = false;
+
+                activeButton = null;
+                currentReader = null;
+                currentAbortController = null;
+            }
+        }
+
+        function cancelSearch() {
+            if (currentAbortController) {
+                // Abort the fetch request
+                currentAbortController.abort();
+                console.log("Search cancelled by user");
+            }
+
+add_empty_state();
+
+            restoreButton();
+        }
+
+        // Add cancel button event listeners
+        cancel_single_btn.addEventListener("click", cancelSearch);
+        cancel_range_btn.addEventListener("click", cancelSearch);
+        cancel_multiple_btn.addEventListener("click", cancelSearch);
+
+        // Modified search button event handlers
+        single_search_btn.addEventListener("click", () => {
+            startSearchUI();
+            startSearchAnimation(single_search_btn);
+
+            console.log("Single search clicked");
+            console.log(`single roll number output : ${roll_number_input.value}`);
+            console.log(`selected sem ${document.getElementById("semester").value}`);
+                const rollNumber = roll_number_input.value.trim();
+    const semester = document.getElementById("semester").value;
+
+
+
+                if (!/^\d+$/.test(rollNumber)) {
+        alert("Roll number contains invalid characters! Only digits are allowed.");
+        restoreButton();
+        return;
+    }
+                    const single_roll_list = [rollNumber];
+    searched_rolls = [...single_roll_list]; // Track searched roll
+
+    console.log("Sanitized roll number list:", single_roll_list);
+    console.log(`Selected semester: ${semester}`);
+document.getElementById('empty-state').style.display = 'none';
+result_parent_container.style.display = 'block';
+result_parent_container.innerHTML="";
+
+    fetch("/get-data", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ roll_list: single_roll_list, access_point:semester_select.value }),
+        signal: currentAbortController.signal
+    })
+    .then(res => {
+        if (res.ok) {
+            showResultsUI()
+            const reader = res.body.getReader();
+            currentReader = reader;
+            const decoder = new TextDecoder();
+
+            let firstDataReceived = false;
+
+            reader.read().then(function process({ done, value }) {
+                if (done) {
+                    // Generate final CSV with all searched rolls
+                    generateFinalCSV();
+                    json_output.innerText=total_json_txt;
+                    csv_output.innerText=formatCSVAsList();
+                    console.log("data receiving finished from server ");
+                    restoreButton();
+                    return;
+                }
+
+                const chunk = decoder.decode(value, { stream: true });
+                console.log("Raw chunk:", chunk);
+
+                // Check if first data has been received
+                if (!firstDataReceived && chunk.includes('"personal_info"')) {
+                    updateToExtractingData();
+                    firstDataReceived = true;
+                }
+
+                create_json_data(chunk);
+                create_csv_data(chunk);
+                create_score_card(chunk);
+                found_count+=1
+                results_count.innerText=`${found_count} found`;
+
+                return reader.read().then(process);
+            })
+        }
+    })
+    .catch(err => {
+        if (err.name === 'AbortError') {
+            console.log("Fetch aborted by user");
+        } else {
+            console.error("❌ Fetch error:", err);
+        }
+        restoreButton();
+    })
+
+
+        })
+
+        let poor_input_of_exceptions = [];
+        let final_exception_inputs = [];
+        let refined_expression_inputs = [];
+
+range_search_btn.addEventListener("click", () => {
+    startSearchUI();
+    startSearchAnimation(range_search_btn);
+
+    console.log(`selected sem ${document.getElementById("semester").value}`);
+    poor_input_of_exceptions.length=0;
+    final_exception_inputs.length=0;
+    refined_expression_inputs.length=0;
+
+    console.log("Range search clicked");
+
+    let starting_rn = start_roll_input.value.trim();
+    let ending_rn   = end_roll_input.value.trim();
+    let exceptions_rn = exceptions_input.value.trim();
+    console.log("Exceptions:", exceptions_rn);
+
+    // Validation checks
+    if (starting_rn === "" && ending_rn !== "") {
+        console.log("Starting roll number cant be empty");
+        alert("Starting roll number cant be empty");
+        restoreButton();
+        return;
+    }
+    else if (starting_rn !== "" && ending_rn === "") {
+        console.log("Ending roll number cant be empty");
+        alert("Ending roll number cant be empty");
+        restoreButton();
+        return;
+    }
+    else if (starting_rn === "" || ending_rn === "") {
+        console.log("Enter both starting and ending number");
+        alert("Please enter both starting and ending roll numbers!");
+        restoreButton();
+        return;
+    }
+
+    if (isNaN(starting_rn) || isNaN(ending_rn)) {
+        alert("Start and End roll numbers must be numbers!");
+        restoreButton();
+        return;
+    }
+
+    let start_num = Number(starting_rn);
+    let end_num   = Number(ending_rn);
+
+    if (start_num >= end_num) {
+        alert("Starting roll number must be less than ending roll number!");
+        restoreButton();
+        return;
+    }
+
+    if ((end_num-start_num)>500){
+        alert("BETA AUKAT KE BAHAR MAAT JA\nPEECHE PEECHE NA \n\nAVE AAA NIKAL NA PEECHE")
+             restoreButton();
+        return;
+    }
+
+    console.log(`Starting roll number = ${start_num}`);
+    console.log(`Ending roll number = ${end_num}`);
+
+    let possible_ranges = [];
+
+    if ((end_num - start_num) > 0) {
+        let number = end_num - start_num;
+        for (let i = 0; i <= number; i++) {
+            possible_ranges.push(start_num + i);
+        }
+    }
+
+    if (exceptions_rn !== "") {
+        if (exceptions_rn.includes(",")) {
+            console.log("Exception have multiple roll numbers");
+            let exception_row = exceptions_rn.split(",");
+            console.log("Exception rows:", exception_row);
+
+            for (let i of exception_row) {
+                let num = Number(i.trim());
+                if (!isNaN(num)) {
+                    final_exception_inputs.push(num);
+                }
+                else {
+                    poor_input_of_exceptions.push(i);
+                    console.log("Poor exception input:", i);
+                }
+            }
+
+            for (let i of final_exception_inputs) {
+                if (i >= start_num && i <= end_num) {
+                    refined_expression_inputs.push(i);
+                }
+                else {
+                    console.log(`${i} is out of range`);
+                    poor_input_of_exceptions.push(i);
+                }
+            }
+        }
+        else {
+            console.log("Exception has only one roll number");
+            let num = Number(exceptions_rn);
+            if (!isNaN(num)) {
+                if (num >= start_num && num <= end_num) {
+                    refined_expression_inputs.push(num);
+                }
+                else {
+                    poor_input_of_exceptions.push(num);
+                }
+            }
+            else {
+                poor_input_of_exceptions.push(exceptions_rn);
+            }
+        }
+    }
+
+    console.log("Possible ranges:", possible_ranges);
+    console.log("Refined exceptions:", refined_expression_inputs);
+    console.log("Poor inputs:", poor_input_of_exceptions);
+
+    refined_expression_inputs = [...new Set(refined_expression_inputs)];
+    console.log("Unique refined exceptions:", refined_expression_inputs);
+
+    let final_usable_rolls = possible_ranges.filter(
+        x => !refined_expression_inputs.includes(x)
+    );
+
+    console.log("Final usable rolls:", final_usable_rolls);
+    console.log("Total rolls to process:", final_usable_rolls.length);
+    searched_rolls = [...final_usable_rolls]; // Track all searched rolls
+
+document.getElementById('empty-state').style.display = 'none';
+result_parent_container.style.display = 'block';
+
+fetch("/get-data", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ roll_list: final_usable_rolls, access_point:semester_select.value }),
+        signal: currentAbortController.signal
+    })
+    .then(res => {
+        if (res.ok) {
+            showResultsUI()
+            const reader = res.body.getReader();
+            currentReader = reader;
+            const decoder = new TextDecoder();
+
+            let firstDataReceived = false;
+
+            reader.read().then(function process({ done, value }) {
+                if (done) {
+                    // Generate final CSV with all searched rolls
+                    generateFinalCSV();
+                    json_output.innerText=total_json_txt;
+                    csv_output.innerText=formatCSVAsList();
+                    console.log("data receiving finished from server ");
+                    restoreButton();
+                    return;
+                }
+
+                const chunk = decoder.decode(value, { stream: true });
+                console.log("Raw chunk:", chunk);
+
+
+                if (!firstDataReceived && chunk.includes('"personal_info"')) {
+                    updateToExtractingData();
+                    firstDataReceived = true;
+                }
+
+                create_json_data(chunk);
+                create_csv_data(chunk);
+                create_score_card(chunk);
+                found_count+=1
+                results_count.innerText=`${found_count} found`;
+
+                return reader.read().then(process);
+            })
+        }
+    })
+    .catch(err => {
+        if (err.name === 'AbortError') {
+            console.log("Fetch aborted by user");
+        } else {
+            console.error("❌ Fetch error:", err);
+        }
+        restoreButton();
+    })
+});
+
+
+// Modify just the create_json_data function
+function create_json_data(d) {
+    if (!d.trim()) return;
+
+    if (d.startsWith("data: ")) {
+        d = d.slice(6).trim();
+    }
+
+    if (!d.trim()) return;
+
+    try {
+        const data = JSON.parse(d);
+
+        if (data.error) {
+            console.log("Skipping error response:", data.error);
+            return;
+        }
+
+        // Append to total JSON text
+        total_json_txt += JSON.stringify(data, null, 2) + ",\n\n";
+
+        // Update JSON display INSTANTLY
+        json_output.innerText = "[\n" + total_json_txt + "\n]";
+
+        // Auto-scroll to bottom
+        setTimeout(() => {
+            const jsonDisplay = document.querySelector('.json-display');
+            if (jsonDisplay) {
+                jsonDisplay.scrollTop = jsonDisplay.scrollHeight;
+            }
+        }, 50);
+
+    } catch (error) {
+        console.log("Partial JSON or parse error, will try with next chunk:", error.message);
+    }
+}
+
+// Function to generate final CSV headers
+function generateCSVHeaders() {
+    // Convert Set to sorted array for consistent column order
+    const sortedSubjects = Array.from(all_subject_names).sort();
+
+    // Start with basic columns
+    let headers = ['roll', 'name', 'father'];
+
+    // Add columns for each subject: subject_grade and subject_marks
+    sortedSubjects.forEach(subject => {
+        const cleanSubjectName = subject.replace(/,/g, '').replace(/"/g, '').replace(/\s+/g, '_');
+        headers.push(`${cleanSubjectName}_grade`);
+        headers.push(`${cleanSubjectName}_marks`);
+    });
+
+    // Add final columns
+    headers.push('cgpa', 'sgpa', 'pass');
+
+    return headers;
+}
+
+// Function to generate final CSV with all searched rolls
+function generateFinalCSV() {
+    // Generate headers
+    const headers = generateCSVHeaders();
+
+    // Clear all CSV data array
+    all_csv_data = [];
+
+    // Add headers as first array
+    all_csv_data.push(headers);
+
+    // Sort searched rolls numerically
+    const sortedSearchedRolls = [...searched_rolls].sort((a, b) => Number(a) - Number(b));
+
+    // Convert Set to sorted array for consistent column order
+    const sortedSubjects = Array.from(all_subject_names).sort();
+
+    // Add data for each searched roll
+    sortedSearchedRolls.forEach(roll => {
+        const data = csv_data_map.get(roll.toString());
+        let rowData = [];
+
+        if (data) {
+            // Student found - use their data
+            rowData.push(data.roll_no);
+            rowData.push(data.student_name);
+            rowData.push(data.father_name);
+
+            // Add subject grades and marks
+            sortedSubjects.forEach(subject => {
+                const cleanSubjectName = subject.replace(/,/g, '').replace(/"/g, '').replace(/\s+/g, '_');
+                const subjectData = data.subjectMap[cleanSubjectName] || { grade: '', marks: '' };
+                rowData.push(subjectData.grade);
+                rowData.push(subjectData.marks);
+            });
+
+            // Add final columns
+            rowData.push(data.cgpa);
+            rowData.push(data.sgpa);
+            rowData.push(data.pass_status);
+        } else {
+            // Student not found - create empty row
+            rowData.push(roll.toString());
+            rowData.push('');
+            rowData.push('');
+
+            // Add empty columns for all subjects
+            sortedSubjects.forEach(() => {
+                rowData.push(''); // grade
+                rowData.push(''); // marks
+            });
+
+            // Add final columns
+            rowData.push('');
+            rowData.push('');
+            rowData.push('NOT FOUND');
+        }
+
+        all_csv_data.push(rowData);
+    });
+
+    csv_headers_generated = true;
+}
+
+// Function to format CSV data as list format
+function formatCSVAsList() {
+    if (all_csv_data.length === 0) {
+        return '// No CSV data available. Perform a search first.';
+    }
+
+    let formattedOutput = '';
+
+    all_csv_data.forEach((row, index) => {
+        // Format each value - quote strings, keep numbers as is
+        const formattedRow = row.map(value => {
+            if (value === '') {
+                return '""';
+            } else if (typeof value === 'string' && !isNaN(value) && value.trim() !== '') {
+                // If it's a numeric string, don't quote it
+                return value;
+            } else {
+                // Quote string values
+                return `"${value}"`;
+            }
+        });
+
+        // Join with commas and wrap in brackets
+        formattedOutput += `[${formattedRow.join(',')}]`;
+
+        // Add comma and newline if not last row
+        if (index < all_csv_data.length - 1) {
+            formattedOutput += ',\n';
+        }
+    });
+
+    return formattedOutput;
+}
+
+// Updated function to create CSV data
+function create_csv_data(d) {
+    if (!d.trim()) return;
+
+    if (d.startsWith("data: ")) {
+        d = d.slice(6).trim();
+    }
+
+    if (!d.trim()) return;
+
+    try {
+        const data = JSON.parse(d);
+
+        // Check if this is an error response (student not found)
+        if (data.error) {
+            console.log("Student not found or error:", data.error);
+
+            // Store empty data for this roll in the map
+            const roll_no = data.roll || '';
+            csv_data_map.set(roll_no.toString(), {
+                roll_no: roll_no,
+                student_name: '',
+                father_name: '',
+                cgpa: '',
+                sgpa: '',
+                pass_status: 'NOT FOUND',
+                subjectMap: {}
+            });
+
+            // Update temporary display
+            updateTempCSVDisplay();
+            return;
+        }
+
+        // Extract basic info for found student
+        const roll_no = data.personal_info?.roll_no || '';
+        const student_name = data.personal_info?.student_name || '';
+        const father_name = data.personal_info?.father_name || '';
+        const sgpa = data.result?.[0]?.sgpa || '';
+        const cgpa = data.result?.[1]?.cgpa || '';
+        const result_status = data.result?.[2]?.result || '';
+
+        // Determine pass/fail status
+        const isPass = result_status.toLowerCase().includes("pass") || result_status.trim() === "";
+        const pass_status = isPass ? "PASS" : "FAIL";
+
+        // Collect subject names for header generation
+        if (data.marks && Array.isArray(data.marks)) {
+            data.marks.forEach(subject => {
+                if (subject.subject) {
+                    all_subject_names.add(subject.subject);
+                }
+            });
+        }
+
+        // Create a map of subject data for this student
+        const subjectMap = {};
+        if (data.marks && Array.isArray(data.marks)) {
+            data.marks.forEach(subject => {
+                if (subject.subject) {
+                    const cleanSubjectName = subject.subject.replace(/,/g, '').replace(/"/g, '').replace(/\s+/g, '_');
+                    subjectMap[cleanSubjectName] = {
+                        grade: subject.grade || '',
+                        marks: subject.credit || '' // Using credit as marks
+                    };
+                }
+            });
+        }
+
+        // Store data in map for later CSV generation
+        csv_data_map.set(roll_no.toString(), {
+            roll_no: roll_no,
+            student_name: student_name,
+            father_name: father_name,
+            cgpa: cgpa,
+            sgpa: sgpa,
+            pass_status: pass_status,
+            subjectMap: subjectMap
+        });
+
+        // Update temporary display
+        updateTempCSVDisplay();
+
+    } catch (error) {
+        console.log("Partial JSON or parse error for CSV:", error.message);
+    }
+}
+
+// Function to update temporary CSV display
+function updateTempCSVDisplay() {
+    if (all_subject_names.size === 0) return;
+
+    // Generate temporary data for display
+    const headers = generateCSVHeaders();
+    let tempData = [headers];
+
+    // Convert Set to sorted array for consistent column order
+    const sortedSubjects = Array.from(all_subject_names).sort();
+
+    // Sort processed rolls
+    const sortedProcessedRolls = Array.from(csv_data_map.keys()).sort((a, b) => Number(a) - Number(b));
+
+    // Add data for students processed so far
+    sortedProcessedRolls.forEach(roll => {
+        const data = csv_data_map.get(roll);
+        let rowData = [];
+
+        if (data) {
+            rowData.push(data.roll_no);
+            rowData.push(data.student_name);
+            rowData.push(data.father_name);
+
+            // Add subject grades and marks
+            sortedSubjects.forEach(subject => {
+                const cleanSubjectName = subject.replace(/,/g, '').replace(/"/g, '').replace(/\s+/g, '_');
+                const subjectData = data.subjectMap[cleanSubjectName] || { grade: '', marks: '' };
+                rowData.push(subjectData.grade);
+                rowData.push(subjectData.marks);
+            });
+
+            // Add final columns
+            rowData.push(data.cgpa);
+            rowData.push(data.sgpa);
+            rowData.push(data.pass_status);
+        }
+
+        tempData.push(rowData);
+    });
+
+    // Format and display
+    csv_output.innerText = formatTempCSVAsList(tempData);
+
+    // Auto-scroll to bottom
+    setTimeout(() => {
+        const csvDisplay = document.querySelector('.csv-display');
+        if (csvDisplay) {
+            csvDisplay.scrollTop = csvDisplay.scrollHeight;
+        }
+    }, 50);
+}
+
+// Function to format temporary CSV data as list format
+function formatTempCSVAsList(tempData) {
+    if (tempData.length === 0 || tempData[0].length === 0) {
+        return '// Processing data...';
+    }
+
+    let formattedOutput = '';
+
+    tempData.forEach((row, index) => {
+        // Format each value - quote strings, keep numbers as is
+        const formattedRow = row.map(value => {
+            if (value === '') {
+                return '""';
+            } else if (typeof value === 'string' && !isNaN(value) && value.trim() !== '') {
+                // If it's a numeric string, don't quote it
+                return value;
+            } else {
+                // Quote string values
+                return `"${value}"`;
+            }
+        });
+
+        // Join with commas and wrap in brackets
+        formattedOutput += `[${formattedRow.join(',')}]`;
+
+        // Add comma and newline if not last row
+        if (index < tempData.length - 1) {
+            formattedOutput += ',\n';
+        }
+    });
+
+    return formattedOutput;
+}
+
+
+
+
+        let multiple_searcable=[];
+        let poor_inputs=[];
+
+
+
+        multiple_search_button.addEventListener("click", () => {
+startSearchUI();
+startSearchAnimation(multiple_search_button);
+
+            console.log(`selected sem ${document.getElementById("semester").value}`);
+
+            multiple_searcable.length = 0;
+            poor_inputs.length = 0;
+
+            console.log("multiple roll number button clicked");
+
+            let a = multiple_rolls_input.value.trim();
+
+
+            let parts = a.split(/[ ,]+/).filter(Boolean);
+
+            for (let i of parts) {
+
+                if (/^\d+$/.test(i)) {
+                    multiple_searcable.push(i);
+                } else {
+                    poor_inputs.push(i);
+                }
+            }
+
+            console.log("Valid rolls:", multiple_searcable);
+            console.log("Invalid input:", poor_inputs);
+
+            searched_rolls = [...multiple_searcable]; // Track all searched rolls
+
+            if (multiple_searcable.length > 500) {
+                alert("BETA AUKAT KE BAHAR NAHI JANEKA AUKAT ME REHNE KA\nCHALO NIKO PEECHE AUR PEECHE\n\nAVE JAA NA PEECHE...")
+                restoreButton();
+                return;
+            }
+
+            fetch("/get-data", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ roll_list: multiple_searcable, access_point:semester_select.value }),
+        signal: currentAbortController.signal
+    })
+    .then(res => {
+        if (res.ok) {
+            showResultsUI()
+            const reader = res.body.getReader();
+            currentReader = reader;
+            const decoder = new TextDecoder();
+
+            let firstDataReceived = false;
+
+            reader.read().then(function process({ done, value }) {
+                if (done) {
+                    // Generate final CSV with all searched rolls
+                    generateFinalCSV();
+                    json_output.innerText=total_json_txt;
+                    csv_output.innerText=formatCSVAsList();
+                    console.log("data receiving finished from server ");
+                    restoreButton();
+                    return;
+                }
+
+                const chunk = decoder.decode(value, { stream: true });
+                console.log("Raw chunk:", chunk);
+
+                // Check if first data has been received
+                if (!firstDataReceived && chunk.includes('"personal_info"')) {
+                    updateToExtractingData();
+                    firstDataReceived = true;
+                }
+
+                create_json_data(chunk);
+                create_csv_data(chunk);
+                create_score_card(chunk);
+                found_count+=1
+                results_count.innerText=`${found_count} found`;
+
+                return reader.read().then(process);
+            })
+        }
+    })
+    .catch(err => {
+        if (err.name === 'AbortError') {
+            console.log("Fetch aborted by user");
+        } else {
+            console.error("❌ Fetch error:", err);
+        }
+        restoreButton();
+    })
+        });
+
+     //-----------------toggle inputs ends -------------------------
+function create_score_card(d) {
+    showResultsUI()
+    if (d.startsWith("data: ")) {
+        d = d.slice(6).trim();
+    }
+
+    // Parse JSON with error handling
+    let data;
+    try {
+        data = JSON.parse(d);
+    } catch (error) {
+        console.error("Failed to parse JSON:", error);
+        // Create error card for parse failure
+        const studentCard = document.createElement("div");
+        studentCard.className = "student-card";
+        studentCard.innerHTML = `
+            <div class="student-header">
+                <div class="student-info">
+                    <h3 style="color: var(--danger-red)">JSON Parse Error</h3>
+                    <p>Invalid data received from server</p>
+                </div>
+                <div class="result-status fail">PARSE ERROR</div>
+            </div>
+            <div style="padding: 1rem; background: rgba(239, 68, 68, 0.1); border-radius: 8px; margin-top: 1rem;">
+                <div style="color: var(--danger-red); font-size: 0.9rem;">
+                    <strong>Error Details:</strong> Failed to parse JSON data
+                </div>
+            </div>
+        `;
+        document.getElementById("result-content").appendChild(studentCard);
+        document.getElementById("result-content").style.display = "block";
+        return;
+    }
+
+    // Check for error response from server
+    if (data && data.error) {
+        // Create error card
+        const studentCard = document.createElement("div");
+        studentCard.className = "student-card";
+
+        let errorText = data.error || "Unknown error occurred";
+        if (errorText.length > 200) {
+            errorText = errorText.substring(0, 200) + "...";
+        }
+
+        studentCard.innerHTML = `
+            <div class="student-header">
+                <div class="student-info">
+                    <h3 style="color: var(--danger-red)">Error for Roll: ${data.roll || 'N/A'}</h3>
+                    <p>Roll No: ${data.roll || 'N/A'} | Unable to fetch data</p>
+                </div>
+                <div class="result-status fail">ERROR 404 / NOT FOUND</div>
+            </div>
+            <div style="padding: 1rem; background: rgba(239, 68, 68, 0.1); border-radius: 8px; margin-top: 1rem;">
+                <div style="color: var(--danger-red); font-size: 0.9rem;">
+                    <strong>Error Details:</strong> ${errorText.replace(/</g, '&lt;').replace(/>/g, '&gt;')}
+                </div>
+            </div>
+        `;
+        document.getElementById("result-content").appendChild(studentCard);
+        document.getElementById("result-content").style.display = "block";
+        return;
+    }
+
+    // Validate required data structure
+    if (!data || !data.personal_info || !data.marks || !data.result) {
+        console.error("Invalid data structure:", data);
+        const studentCard = document.createElement("div");
+        studentCard.className = "student-card";
+        studentCard.innerHTML = `
+            <div class="student-header">
+                <div class="student-info">
+                    <h3 style="color: var(--danger-red)">Data Error</h3>
+                    <p>Roll No: ${data.roll || 'Unknown'} | Invalid data structure</p>
+                </div>
+                <div class="result-status fail">DATA ERROR</div>
+            </div>
+        `;
+        document.getElementById("result-content").appendChild(studentCard);
+        document.getElementById("result-content").style.display = "block";
+        return;
+    }
+
+    console.log(`Creating score card for ${data.roll}`);
+
+    // Create the main student card
+    const studentCard = document.createElement("div");
+    studentCard.className = "student-card";
+
+    // Determine if student passed
+    const isPass = data.result[2] && data.result[2].result &&
+                  (data.result[2].result.toLowerCase().includes("pass") ||
+                   data.result[2].result.trim() === "");
+
+    // Build HTML content
+    let htmlContent = `
+        <div class="student-header">
+            <div class="student-info">
+                <h3>${(data.personal_info.student_name || 'N/A').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</h3>
+                <p>Roll No: ${(data.personal_info.roll_no || 'N/A').replace(/</g, '&lt;').replace(/>/g, '&gt;')}  |  Father: ${(data.personal_info.father_name || 'N/A').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</p>
+            </div>
+            <div class="result-status ${isPass ? 'pass' : 'fail'}">${isPass ? 'PASS' : 'NOT SO PASS'}</div>
+        </div>
+
+        <div class="student-results">
+            <div class="result-item">
+                <div class="result-label">SGPA</div>
+                <div class="result-value sgpa">${data.result[0]?.sgpa || 'N/A'}</div>
+            </div>
+            <div class="result-item">
+                <div class="result-label">CGPA</div>
+                <div class="result-value cgpa">${data.result[1]?.cgpa || 'N/A'}</div>
+            </div>
+        </div>
+
+        <table class="marks-table">
+            <thead>
+                <tr>
+                    <th>Subject</th>
+                    <th>Subject Code</th>
+                    <th>Credit</th>
+                    <th>Grade</th>
+                </tr>
+            </thead>
+            <tbody>
+    `;
+
+    // Add marks rows
+    if (data.marks && Array.isArray(data.marks)) {
+        data.marks.forEach(subject => {
+            const grade = subject.grade || 'N/A';
+            let gradeClass = "grade";
+            if (grade !== 'N/A') {
+                const formattedGrade = grade.toUpperCase().replace('+', '-plus');
+                gradeClass += ` grade-${formattedGrade}`;
+            }
+
+            htmlContent += `
+                <tr>
+                    <td>${(subject.subject || 'N/A').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</td>
+                    <td>${(subject.subject_code || 'N/A').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</td>
+                    <td>${subject.credit || 'N/A'}</td>
+                    <td><span class="${gradeClass}">${grade}</span></td>
+                </tr>
+            `;
+        });
+    }
+
+    htmlContent += `</tbody></table>`;
+
+    // Add backlog subjects if failed
+    if (!isPass && data.result[2] && data.result[2].result && data.result[2].result.trim() !== "") {
+        htmlContent += `
+            <div style="margin-top: 1rem; color: var(--danger-red); font-size: 0.9rem;">
+                <strong>Backlog Subjects:</strong> ${(data.result[2].result || '').replace(/</g, '&lt;').replace(/>/g, '&gt;')}
+            </div>
+        `;
+    }
+
+    // Set HTML content
+    studentCard.innerHTML = htmlContent;
+
+    // Add to results container
+    const resultContent = document.getElementById("result-content");
+    if (resultContent) {
+        resultContent.appendChild(studentCard);
+        resultContent.style.display = "block";
+    }
+}
+
+// Copy functionality for JSON and CSV
+copyJsonBtn.addEventListener('click', () => {
+    navigator.clipboard.writeText(json_output.innerText)
+        .then(() => {
+            const originalText = copyJsonBtn.innerHTML;
+            copyJsonBtn.innerHTML = '<i class="fas fa-check"></i> Copied!';
+            setTimeout(() => {
+                copyJsonBtn.innerHTML = originalText;
+            }, 2000);
+        })
+        .catch(err => {
+            console.error('Failed to copy JSON: ', err);
+        });
+});
+
+copyCsvBtn.addEventListener('click', () => {
+    navigator.clipboard.writeText(csv_output.innerText)
+        .then(() => {
+            const originalText = copyCsvBtn.innerHTML;
+            copyCsvBtn.innerHTML = '<i class="fas fa-check"></i> Copied!';
+            setTimeout(() => {
+                copyCsvBtn.innerHTML = originalText;
+            }, 2000);
+        })
+        .catch(err => {
+            console.error('Failed to copy CSV: ', err);
+        });
+});
+
+
+    </script>
+
+
+</html>
+
+</html>
