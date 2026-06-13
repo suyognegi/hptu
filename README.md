@@ -1,7 +1,8 @@
-its better HPTU (unofficial)
+
+# its better HPTU (unofficial)
 i was in a hurry so created it just for 2nd sem result for now.
 
-WHAT DOES IT DO ?
+## WHAT DOES IT DO ?
 1) NO ads so...
 2) BATCH/RANGE fetching of data of rollno. , can also skip certain given rollno.
 3) Helpful for teachers and devs to extract and copy data (result) of rollno.
@@ -9,14 +10,15 @@ WHAT DOES IT DO ?
 
 feel free to extrend it
 
-############################
+
+---
 
 
 before running the project, install Node.js from:
 
 https://nodejs.org
 
-download the LTS version and complete the installation.
+download the LTS version and complete the installation
 
 to verify the installation open a terminal and run:
 
@@ -25,14 +27,16 @@ to verify the installation open a terminal and run:
 node -v
 npm -v
 ```
-################################
 
-HOW TO RUN
+---
 
-download all html and js file in your WebStorm/VSCode
+
+## HOW TO RUN
+
+download all html and js file in your **WebStorm/VSCode**
 
 download keep your api.py file someone and note its location
-in your local of PyCham vnv rum
+in your local of **PyCham vnv** run
 
 ```bash
 pip install fastapi uvicorn playwright && playwright install chromium
@@ -49,7 +53,7 @@ uvicorn api:app
 
 after running the above 
 
-do (in your WebStorm terminal)
+do (in your **WebStorm terminal**)
 
 ```bash
 npm install express
@@ -61,5 +65,4 @@ node server.js
 follow the http://localhost:7121
 
 in your WebStorm/VScode
-
 
