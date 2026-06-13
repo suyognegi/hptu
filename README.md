@@ -62,7 +62,7 @@ node server.js
 
 
 
-follow the  `http://localhost:7121`
 
-in your **WebStorm/VScode**
+open `http://localhost:7121` in your `browser`
+
 
