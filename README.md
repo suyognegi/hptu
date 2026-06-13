@@ -4,8 +4,8 @@ i was in a hurry so created it just for 2nd sem result for now.
 WHAT DOES IT DO ?
 1) NO ads so...
 2) BATCH/RANGE fetching of data of rollno. , can also skip certain given rollno.
-3) Helpful for teachers and devs to extract and copy data of rollno.
-4) the rollno. data is avalable visually as well as in json format awa in CSV for MS Excel format as well
+3) Helpful for teachers and devs to extract and copy data (result) of rollno.
+4) the rollno. data (result) is avalable visually as well as in json format awa in CSV for MS Excel format as well
 
 feel free to extrend it
 
