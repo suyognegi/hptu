@@ -3,8 +3,7 @@ i was in a hurry so created it just for 2nd sem result for now.
 feel free to extrend it
 
 
-HOW TO USE 
-
+HOW TO RUN
 
 download all html and js file in your WebStorm/VSCode
 
@@ -14,4 +13,20 @@ in your local of PyCham vnv rum
 
 pip install fastapi uvicorn playwright && playwright install chromium
 
+and then run 
 
+uvicorn api:app
+
+
+
+after running the above 
+
+do 
+
+
+npm install express
+node server.js
+
+follow the 
+
+in your WebStorm/VScode
