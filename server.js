@@ -81,7 +81,7 @@ app.post('/get-data', async (req, res) => {
 })
 
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'trying_deep4_8.html'))
+    res.sendFile(path.join(__dirname, 'home.html'))
 })
 
 app.get("/about-us", (req, res) => {
