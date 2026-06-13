@@ -8,7 +8,7 @@ i was in a hurry so created it just for 2nd sem result for now.
 3) Helpful for teachers and devs to extract and copy data (result) of rollno.
 4) the rollno. data (result) is avalable visually as well as in json format awa in CSV for MS Excel format as well
 
-feel free to extrend it
+feel free to extend it
 
 
 ---
@@ -36,7 +36,7 @@ npm -v
 download all html and js file in your **WebStorm/VSCode**
 
 download keep your api.py file someone and note its location
-in your local of **PyCham vnv** run
+in your local of **PyCham venv** run
 
 ```bash
 pip install fastapi uvicorn playwright && playwright install chromium
