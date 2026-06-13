@@ -1,7 +1,26 @@
 its better HPTU (unofficial)
 i was in a hurry so created it just for 2nd sem result for now.
+
+WHAT DOES IT DO ?
+1) NO ads so...
+2) BATCH/RANGE fetching of data of rollno. , can also skip certain given rollno.
+3) Helpful for teachers and devs to extract and copy data of rollno.
+4) the rollno. data is avalable visually as well as in json format awa in CSV for MS Excel format as well
+
 feel free to extrend it
 
+############################
+before running the project, install Node.js from:
+
+https://nodejs.org
+
+download the LTS (Long Term Support) version and complete the installation.
+
+to verify the installation, open a terminal and run:
+
+node -v
+npm -v
+################################
 
 HOW TO RUN
 
@@ -21,12 +40,20 @@ uvicorn api:app
 
 after running the above 
 
-do 
+do (in your WebStorm)
 
 
 npm install express
 node server.js
 
-follow the 
+follow the http://localhost:7121
 
 in your WebStorm/VScode
+
+
+
+**Bold Text**
+
+*Italic Text*
+
+~~Strikethrough~~
